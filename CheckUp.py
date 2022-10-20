@@ -79,7 +79,8 @@ def get_data(stuID, stuPass):
         id = json_seletc['json']['data']['xhOrgh']
         msg = '成功！'
 
-    finalMsg = '打卡任务：\n\n学号:' + id + '\n' + '打卡:' + msg + '\n\n' + sysMsg
+    finalMsg = '打卡任务：\n学号:' + id + '\n' + '打卡:' + msg
+    # finalMsg = '打卡任务：\n\n学号:' + id + '\n' + '打卡:' + msg + '\n\n' + sysMsg
 
     return finalMsg
 
@@ -104,5 +105,5 @@ if __name__ == '__main__':
 
         message = i[0] + '\n' + get_data(stuID, stuPass)
         asyncio.run(main(botToken, message))
-        print(message)
+        print(message + '\n')
         time.sleep(2)
