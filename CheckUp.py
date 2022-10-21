@@ -7,10 +7,10 @@ import json
 from bs4 import BeautifulSoup
 
 
-def get_data(stuID, stuPass):
+def check_up(stuID, stuPass, pushUrl):
     cookieUrl = 'https://yqtb.nua.edu.cn/mp-czzx/login'
     s = requests.Session()
-    # s.cookies.clear
+    s.cookies.clear
     s.get(cookieUrl, headers={'userId': stuID, 'password': stuPass}, timeout=5)
 
     headers = {
@@ -23,10 +23,10 @@ def get_data(stuID, stuPass):
         'Cookie': "idSession=" + s.cookies.get("idSession") + ";openId=" + s.cookies.get("openId") + ";route=" + s.cookies.get("route"),
         'Host': 'yqtb.nua.edu.cn',
         'Origin': 'https://yqtb.nua.edu.cn',
-        'Referer': 'https://yqtb.nua.edu.cn/mp-czzx/webs/yqsb/sjhmcj/index.html',
+        'Referer': pushUrl,
         'sec-ch-ua': '"Chromium";v="106", "Google Chrome";v="106", "Not;A=Brand";v="99"',
         'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"macOS"',
+        'sec-ch-ua-platform': '"iOS"',
         'Sec-Fetch-Dest': 'empty',
         'Sec-Fetch-Mode': 'cors',
         'Sec-Fetch-Site': 'same-origin',
@@ -99,11 +99,14 @@ if __name__ == '__main__':
         ['徐子为', 'M2205109', '063813'],
     ]
 
+    pushUrl = 'https://yqtb.nua.edu.cn/mp-czzx/webs/yqsb/sjhmcj/index.html'
+    pushSecUrl = 'https://yqtb.nua.edu.cn/mp-czzx/webs/yqsb/xsyqtb_reload.html'
+
     for i in idData:
         stuID = i[1]
         stuPass = i[2]
 
-        message = i[0] + '\n' + get_data(stuID, stuPass)
+        message = i[0] + '\n' + check_up(stuID, stuPass, pushUrl)
         asyncio.run(main(botToken, message))
         print(message + '\n')
         time.sleep(2)
