@@ -7,7 +7,7 @@ import json
 from bs4 import BeautifulSoup
 
 
-def check_up(stuID, stuPass, pushUrl ):
+def check_up(stuID, stuPass, pushUrl):
     cookieUrl = 'https://yqtb.nua.edu.cn/mp-czzx/login'
     s = requests.Session()
     s.cookies.clear
