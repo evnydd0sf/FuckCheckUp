@@ -132,12 +132,10 @@ async def main(botToken, message):
 
 if __name__ == '__main__':
     botToken = '5426940917:AAGRlAmtYwvkr_3RZrASLoWjoW54s6oMhbU'
-
     idData = [
         ['梁晨梓', 'M2205118', '205112'],
         ['杨兴远', 'M2205117', '162213'],
-        ['徐子为', 'M2205109', '063813'],
-    ]
+        ['徐子为', 'M2205109', '063813'],]
 
     for i in idData:
         stuID = i[1]
