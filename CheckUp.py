@@ -7,12 +7,27 @@ import json
 from bs4 import BeautifulSoup
 
 
-def check_up(stuID, stuPass, pushUrl):
+def check_up(stuID, stuPass, pushType):
+    id = '未知'
+    msg = ''
+
+    if pushType == 0:
+        pushUrl = 'https://yqtb.nua.edu.cn/mp-czzx/webs/yqsb/sjhmcj/index.html'
+    elif pushType == 1:
+        pushUrl = 'https://yqtb.nua.edu.cn/mp-czzx/webs/yqsb/xsyqtb_reload.html'
+
+    # 登录
     cookieUrl = 'https://yqtb.nua.edu.cn/mp-czzx/login'
     s = requests.Session()
     s.cookies.clear
     s.get(cookieUrl, headers={'userId': stuID, 'password': stuPass}, timeout=5)
 
+    if s.cookies is None:
+        msg = '登录失败!'
+        return msg
+    else: msg = '登录成功!'
+
+    # 读取
     headers = {
         'Accept': '*/*',
         'Accept-Encoding': 'gzip, deflate, br',
@@ -40,6 +55,13 @@ def check_up(stuID, stuPass, pushUrl):
     htmlJson = BeautifulSoup(sourceJson.text, "html.parser")
     json_seletc = json.loads(htmlJson.text)
 
+    if json_seletc['json']['data']['xhOrgh'] is None:
+        msg = '登录成功!\n读取失败!'
+        return msg
+    else: 
+        msg = '登录成功!\n读取成功!'
+        id = json_seletc['json']['data']['xhOrgh']
+
     saveData = {
         'xhOrgh': json_seletc['json']['data']['xhOrgh'],
         'tbrq': '',
@@ -55,7 +77,7 @@ def check_up(stuID, stuPass, pushUrl):
         'jkmqk': '0',
         'xcmqk': '0',
         'lxdh': json_seletc['json']['data']['lxdh'],
-        'qtqk': '',
+        'qtqk': '123',
         'role': '1',
         'jrsfwc': '2',
         'ymjzqk': '3',
@@ -64,24 +86,29 @@ def check_up(stuID, stuPass, pushUrl):
         'jjrStqk': '0',
     }
 
-    id = '未知'
-    msg = '错误!'
-
     # 打卡
+    # reloadData = requests.post(
+    #     'https://yqtb.nua.edu.cn/mp-czzx/reload', headers=headers, timeout=5, data=saveData)
+    # reloadJson = BeautifulSoup(reloadData.text, "html.parser")
+    # reload_json_seletc = json.loads(reloadJson.text)
+    # print(reload_json_seletc['json']['data'])
+
     saveData = requests.post(
         'https://yqtb.nua.edu.cn/mp-czzx/save', headers=headers, timeout=5, data=saveData)
     saveJson = BeautifulSoup(saveData.text, "html.parser")
     save_json_seletc = json.loads(saveJson.text)
+
+    # 系统数据
     sysMsg = json.dumps(save_json_seletc['json'], indent=2).encode(
         'utf-8').decode('unicode_escape')
 
-    if save_json_seletc['json']['data'] == 'true':
-        id = json_seletc['json']['data']['xhOrgh']
-        msg = '成功！'
+    if save_json_seletc['json']['data'] == 'true' and save_json_seletc['json']['status'] == 1 and save_json_seletc['json']['msg'] == '获取数据成功'  and save_json_seletc['json']['code'] == 200:
+        msg = '登录成功!\n读取成功!\n打卡成功！'
+    else: 
+        msg = '登录成功!\n读取成功!\n打卡失败！'
+        return msg
 
-    finalMsg = '打卡任务：\n学号:' + id + '\n' + '打卡:' + msg
-    # finalMsg = '打卡任务：\n\n学号:' + id + '\n' + '打卡:' + msg + '\n\n' + sysMsg
-
+    finalMsg = '\n学号:' + id + '\n' + msg
     return finalMsg
 
 
@@ -99,14 +126,11 @@ if __name__ == '__main__':
         ['徐子为', 'M2205109', '063813'],
     ]
 
-    pushUrl = 'https://yqtb.nua.edu.cn/mp-czzx/webs/yqsb/sjhmcj/index.html'
-    pushSecUrl = 'https://yqtb.nua.edu.cn/mp-czzx/webs/yqsb/xsyqtb_reload.html'
-
     for i in idData:
         stuID = i[1]
         stuPass = i[2]
 
-        message = i[0] + '\n' + check_up(stuID, stuPass, pushUrl)
+        message = '姓名:' + i[0] + check_up(stuID, stuPass, 0)
         asyncio.run(main(botToken, message))
         print(message + '\n')
         time.sleep(2)
