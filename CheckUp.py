@@ -11,11 +11,6 @@ from bs4 import BeautifulSoup
 def check_up(stuID, stuPass, pushType):
     msg = ''
 
-    if pushType == 0:
-        pushUrl = 'https://yqtb.nua.edu.cn/mp-czzx/webs/yqsb/sjhmcj/index.html'
-    elif pushType == 1:
-        pushUrl = 'https://yqtb.nua.edu.cn/mp-czzx/webs/yqsb/xsyqtb_reload.html'
-
     # 登录
     try:
         cookieUrl = 'https://yqtb.nua.edu.cn/mp-czzx/login'
@@ -33,6 +28,13 @@ def check_up(stuID, stuPass, pushType):
 
     # 读取
     try:
+        pushUrl = 'https://yqtb.nua.edu.cn/mp-czzx/webs/yqsb/sjhmcj/index.html'
+        
+        if pushType == 0:
+            pushUrl = 'https://yqtb.nua.edu.cn/mp-czzx/webs/yqsb/sjhmcj/index.html'
+        elif pushType == 1:
+            pushUrl = 'https://yqtb.nua.edu.cn/mp-czzx/webs/yqsb/xsyqtb_reload.html'
+
         headers = {
             'Accept': '*/*',
             'Accept-Encoding': 'gzip, deflate, br',
