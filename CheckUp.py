@@ -125,12 +125,12 @@ def check_up(stuID, stuPass, pushType):
 
 async def main(botToken, message):
     bot = telegram.Bot(botToken)
-    async with bot:
-        try: 
-            await bot.send_message(text=message, chat_id=395107166)
-        except Exception as e:
-            print(e)
-            await bot.send_message(text='出现未知错误，请查看错误日志。', chat_id=395107166)
+    try: 
+        bot.send_message(text=message, chat_id=395107166)
+    except Exception as e:
+        print(e)
+        bot.send_message(text='出现未知错误，请查看错误日志。', chat_id=395107166)
+
 
 if __name__ == '__main__':
     botToken = '5426940917:AAGRlAmtYwvkr_3RZrASLoWjoW54s6oMhbU'
