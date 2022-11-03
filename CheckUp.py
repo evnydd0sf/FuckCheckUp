@@ -1,29 +1,32 @@
 import asyncio
 from logging import exception
+from os import access
 import time
 import telegram
 from base64 import decode
 import requests
 import json
 from bs4 import BeautifulSoup
+import random
+from datetime import datetime
+import traceback
 
-
-def check_up(stuID, stuPass, pushType):
+def check_logic(stuID, stuPass, pushType):
     msg = ''
 
     # 登录
     try:
         cookieUrl = 'https://yqtb.nua.edu.cn/mp-czzx/login'
         s = requests.Session()
-        s.cookies.clear
+        # s.cookies
         s.get(cookieUrl, headers={'userId': stuID, 'password': stuPass}, timeout=5)
 
         if s.cookies is None:
-            msg = '登录失败!'
+            msg = '登录❌'
             return msg
-        else: msg = '登录成功!'
+        else: msg = '登录✅'
     except Exception as e:
-        msg = '登录失败!\n\n出现未知错误，请查看错误日志。'
+        msg = '登录❌\n出现错误，请查看错误日志：' + '\n' + str(traceback.format_exc())
         return msg
 
     # 读取
@@ -52,7 +55,7 @@ def check_up(stuID, stuPass, pushType):
             'Sec-Fetch-Dest': 'empty',
             'Sec-Fetch-Mode': 'cors',
             'Sec-Fetch-Site': 'same-origin',
-            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36',
             'X-Requested-With': 'XMLHttpRequest',
         }
 
@@ -63,12 +66,12 @@ def check_up(stuID, stuPass, pushType):
         json_seletc = json.loads(htmlJson.text)
 
         if json_seletc['json']['data']['xhOrgh'] == '':
-            msg = '学号：未知\n登录成功!\n读取失败!'
+            msg = '🪪未知 登录✅ 读取❌'
             return msg
         else: 
-            msg = '学号：' + json_seletc['json']['data']['xhOrgh'] + '\n登录成功!\n读取成功!'
+            msg = '🪪' + json_seletc['json']['data']['xhOrgh'] + '\n登录✅ 读取✅'
     except Exception as e:
-        msg = '学号：未知\n登录成功!\n读取失败!\n\n出现未知错误，请查看错误日志。'
+        msg = '🪪未知\n登录✅ 读取❌\n出现错误，请查看错误日志：' + '\n' + str(traceback.format_exc())
         return msg
     
     # 打卡
@@ -88,7 +91,7 @@ def check_up(stuID, stuPass, pushType):
             'jkmqk': '0',
             'xcmqk': '0',
             'lxdh': json_seletc['json']['data']['lxdh'],
-            'qtqk': '123',
+            'qtqk': '',
             'role': '1',
             'jrsfwc': '2',
             'ymjzqk': '3',
@@ -113,37 +116,88 @@ def check_up(stuID, stuPass, pushType):
         #     'utf-8').decode('unicode_escape')
 
         if save_json_seletc['json']['data'] == 'true' and save_json_seletc['json']['status'] == 1 and save_json_seletc['json']['msg'] == '获取数据成功'  and save_json_seletc['json']['code'] == 200:
-            msg = '学号：' + json_seletc['json']['data']['xhOrgh'] + '\n登录成功!\n读取成功!\n打卡成功！'
+            msg = '🪪' + json_seletc['json']['data']['xhOrgh'] + '\n登录✅ 读取✅ 打卡✅'
         else: 
-            msg = '学号：未知\n登录成功!\n读取成功!\n打卡失败！'
+            msg = '🪪未知\n登录✅ 读取✅ 打卡❌'
             return msg
     except Exception as e:
-        msg = '学号：' + json_seletc['json']['data']['xhOrgh'] + '\n登录成功!\n读取成功!\n打卡失败！\n\n出现未知错误，请查看错误日志。'
+        msg = '🪪' + json_seletc['json']['data']['xhOrgh'] + '\n登录✅ 读取✅ 打卡❌\n出现错误，请查看错误日志：' + '\n' + str(traceback.format_exc())
         return msg
     return msg
 
 
-async def main(botToken, message):
+async def telegramMsg(botToken, message):
     bot = telegram.Bot(botToken)
     try: 
         bot.send_message(text=message, chat_id=395107166)
     except Exception as e:
         print(e)
-        bot.send_message(text='出现未知错误，请查看错误日志。', chat_id=395107166)
+        bot.send_message(text='出现未知错误，请查看错误日志：\n' + str(traceback.format_exc(), chat_id=395107166))
 
+def check_up(idData):
+    finalMessage = ''
+    successMessage = 0
+    failIndex = []
+    failMessage = ''
+
+    for i in idData:
+        stuID = i[1]
+        stuPass = i[2]
+
+        checkMessage = check_logic(stuID, stuPass, 0)
+        
+        message = '🎓' + i[0] + ' ' + checkMessage
+        if checkMessage == '🪪' + i[1] + '\n登录✅ 读取✅ 打卡✅':
+            successMessage += 1
+        else:
+            failIndex.append(idData.index(i))
+            failMessage += i[0] + ' '
+        finalMessage += message + '\n\n'
+        print(message + '\n')
+        time.sleep(random.randint(2,5))
+
+    timeMessage = '打卡结束，时间：' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    if successMessage == len(idData):
+        poepleMessage = '共' + str(len(idData)) + '人，成功打卡' + str(successMessage) + '人'
+    else:
+        poepleMessage = '共' + str(len(idData)) + '人，成功打卡' + str(successMessage) + '人，失败' + str(len(idData) - successMessage) + '人，失败名单：' + failMessage + '，将在十秒内重新打卡。'
+
+    telegramBotMsg = timeMessage + '\n\n' + poepleMessage +'\n\n' + finalMessage
+    print(telegramBotMsg)
+    asyncio.run(telegramMsg(botToken, telegramBotMsg))
+    return failIndex
 
 if __name__ == '__main__':
     botToken = '5426940917:AAGRlAmtYwvkr_3RZrASLoWjoW54s6oMhbU'
     idData = [
         ['梁晨梓', 'M2205118', '205112'],
         ['杨兴远', 'M2205117', '162213'],
-        ['徐子为', 'M2205109', '063813'],]
+        ['徐子为', 'M2205109', '063813'],
+        ['邢韶家', 'M2205108', '015630'],
+        ['董兴杭', 'M2205101', '187017'],
+        ['陈子建', 'M2205107', '02331X'],
+        ['谭智心', 'M2205119', '313017'],
+        ['闻荧', 'Z2208112', '138734']]
 
-    for i in idData:
-        stuID = i[1]
-        stuPass = i[2]
+    fail = check_up(idData)
+    # 循环打卡失败的人
+    init = 0
+    while len(fail) != 0:
+        init += 1
+        print('第' + str(init) + '重新打卡')
+        failData = []
+        for i in fail:
+            failData.append(idData[i])
+        time.sleep(10)
+        for i in fail:
+            check_up(failData)
+        if init == 10:
+            failMessage = ''
+            for i in failData:
+                failMessage += i[0] + ' '
+            asyncio.run(telegramMsg(botToken, '🤖️哥们实在顶不住了，已经十次尝试了，这次就不再尝试了，快看看这' + str(len(failData)) + '个倒霉哥们到底啥情况吧：' + failMessage))
+            break
+            
 
-        message = '姓名:' + i[0] + '\n' + check_up(stuID, stuPass, 0)
-        asyncio.run(main(botToken, message))
-        print(message + '\n')
-        time.sleep(2)
+
+
