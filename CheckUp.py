@@ -141,17 +141,17 @@ def check_up(idData):
     failMessage = ''
 
     for i in idData:
-        stuID = i[1]
-        stuPass = i[2]
+        stuID = i[2]
+        stuPass = i[3]
 
         checkMessage = check_logic(stuID, stuPass, 0)
         
-        message = '🎓' + i[0] + ' ' + checkMessage
-        if checkMessage == '🪪' + i[1] + '\n登录✅ 读取✅ 打卡✅':
+        message = '🎓' + i[1] + ' ' + checkMessage
+        if checkMessage == '🪪' + i[2] + '\n登录✅ 读取✅ 打卡✅':
             successMessage += 1
         else:
-            failIndex.append(idData.index(i))
-            failMessage += i[0] + ' '
+            failIndex.append(i[0])
+            failMessage += i[1] + ' '
         finalMessage += message + '\n\n'
         print(message + '\n')
         time.sleep(random.randint(2,5))
@@ -170,32 +170,41 @@ def check_up(idData):
 if __name__ == '__main__':
     botToken = '5426940917:AAGRlAmtYwvkr_3RZrASLoWjoW54s6oMhbU'
     idData = [
-        ['梁晨梓', 'M2205118', '205112'],
-        ['杨兴远', 'M2205117', '162213'],
-        ['徐子为', 'M2205109', '063813'],
-        ['邢韶家', 'M2205108', '015630'],
-        ['董兴杭', 'M2205101', '187017'],
-        ['陈子建', 'M2205107', '02331X'],
-        ['谭智心', 'M2205119', '313017'],
-        ['闻荧', 'Z2208112', '138734']]
+        [1, '梁晨梓', 'M2205118', '205112'],
+        [2, '杨兴远', 'M2205117', '162213'],
+        [3, '徐子为', 'M2205109', '063813'],
+        [4, '邢韶家', 'M2205108', '015630'],
+        [5, '董兴杭', 'M2205101', '187017'],
+        [6, '陈子建', 'M2205107', '02331X'],
+        [7, '谭智心', 'M2205119', '313017'],
+        [8, '闻荧', 'Z2208112', '138734'],
+        ]
 
-    fail = check_up(idData)
-    # 循环打卡失败的人
+    failIndex = check_up(idData)
+    print(failIndex)
     init = 0
-    while len(fail) != 0:
+    while len(failIndex) != 0:
         init += 1
-        print('第' + str(init) + '重新打卡')
-        failData = []
-        for i in fail:
-            failData.append(idData[i])
         time.sleep(10)
-        for i in fail:
-            check_up(failData)
-        if init == 10:
+        print('第' + str(init) + '次重新打卡')
+        asyncio.run(telegramMsg(botToken, '第' + str(init) + '次重新打卡'))
+        newFailIndex = []
+        newIdDate = []
+        for i in failIndex:
+            newIdDate.append(idData[i-1])
+        newFailIndex += (check_up(newIdDate))
+        failIndex = newFailIndex
+        print(failIndex)
+        if failIndex != []:
+            continue
+        elif init == 10:
             failMessage = ''
-            for i in failData:
-                failMessage += i[0] + ' '
-            asyncio.run(telegramMsg(botToken, '🤖️哥们实在顶不住了，已经十次尝试了，这次就不再尝试了，快看看这' + str(len(failData)) + '个倒霉哥们到底啥情况吧：' + failMessage))
+            for i in failIndex:
+                failMessage += [idData[i]][1] + ' '
+            asyncio.run(telegramMsg(botToken, '🤖️哥们实在顶不住了，已经十次尝试了，这次就不再尝试了，快看看这' + str(len(failIndex)) + '个倒霉哥们到底啥情况吧：' + failMessage))
+            break
+        elif failIndex == []:
+            asyncio.run(telegramMsg(botToken, '🤖️噩梦终于结束了'))
             break
             
 
