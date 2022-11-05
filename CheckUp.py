@@ -18,7 +18,7 @@ def check_logic(stuID, stuPass, pushType):
     try:
         cookieUrl = 'https://yqtb.nua.edu.cn/mp-czzx/login'
         s = requests.Session()
-        # s.cookies
+        s.cookies.clear()
         s.get(cookieUrl, headers={'userId': stuID, 'password': stuPass}, timeout=5)
 
         if s.cookies is None:
@@ -178,6 +178,7 @@ if __name__ == '__main__':
         [6, '陈子建', 'M2205107', '02331X'],
         [7, '谭智心', 'M2205119', '313017'],
         [8, '闻荧', 'Z2208112', '138734'],
+        [9, '闻荧', 'Z220117', '00834'],
         ]
 
     failIndex = check_up(idData)
@@ -186,14 +187,14 @@ if __name__ == '__main__':
     while len(failIndex) != 0:
         init += 1
         time.sleep(10)
-        print('第' + str(init) + '次重新打卡')
+        print('第' + str(init) + '次重新打卡，失败名单：' + str(failIndex))
         asyncio.run(telegramMsg(botToken, '第' + str(init) + '次重新打卡'))
         newFailIndex = []
         newIdDate = []
         for i in failIndex:
             newIdDate.append(idData[i-1])
-        newFailIndex += (check_up(newIdDate))
-        failIndex = newFailIndex
+        failIndex = (check_up(newIdDate))
+        # failIndex = newFailIndex
         print(failIndex)
         if failIndex != []:
             continue
