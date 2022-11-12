@@ -160,7 +160,7 @@ def check_up(idData):
     if successMessage == len(idData):
         poepleMessage = '共' + str(len(idData)) + '人，成功打卡' + str(successMessage) + '人'
     else:
-        poepleMessage = '共' + str(len(idData)) + '人，成功打卡' + str(successMessage) + '人，失败' + str(len(idData) - successMessage) + '人，失败名单：' + failMessage + '，将在十秒内重新打卡。'
+        poepleMessage = '共' + str(len(idData)) + '人，成功打卡' + str(successMessage) + '人，失败' + str(len(idData) - successMessage) + '人，失败名单：' + failMessage + '，将在5秒内重新打卡。'
 
     telegramBotMsg = timeMessage + '\n\n' + poepleMessage +'\n\n' + finalMessage
     print(telegramBotMsg)
@@ -178,15 +178,22 @@ if __name__ == '__main__':
         [6, '陈子建', 'M2205107', '02331X'],
         [7, '谭智心', 'M2205119', '313017'],
         [8, '闻荧', 'Z2208112', '138734'],
-        [9, '闻荧', 'Z220117', '00834'],
-        ]
+        [9, '汤兩晨', 'M2205104', '120026'],
+        [10, '徐文卉', 'M2205105', '180427'],
+        [11, '朱蕙钰', 'M2205106', '073526'],
+        [12, '杨华钰', 'M2205111', '102027'],
+        [13, '周演', 'M2205112', '150048'],
+        [14, '陈京京', 'M2205113', '097621'],
+        [15, '袁梦姣', 'M2205114', '071042'],
+        [16, '张敏', 'M2205115', '093260'],
+        [17, '王奕然', 'M2205116', '240501']]
 
     failIndex = check_up(idData)
     print(failIndex)
     init = 0
     while len(failIndex) != 0:
         init += 1
-        time.sleep(10)
+        time.sleep(5)
         print('第' + str(init) + '次重新打卡，失败名单：' + str(failIndex))
         asyncio.run(telegramMsg(botToken, '第' + str(init) + '次重新打卡'))
         newFailIndex = []
@@ -194,11 +201,10 @@ if __name__ == '__main__':
         for i in failIndex:
             newIdDate.append(idData[i-1])
         failIndex = (check_up(newIdDate))
-        # failIndex = newFailIndex
         print(failIndex)
         if failIndex != []:
             continue
-        elif init == 10:
+        if init == 10:
             failMessage = ''
             for i in failIndex:
                 failMessage += [idData[i]][1] + ' '
