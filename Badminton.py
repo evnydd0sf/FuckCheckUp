@@ -7,6 +7,48 @@ BSite = [{'一号场地': 'c4e76dab6c9549949fb8184358f589c9'},
     {'四号场地': 'YCoA2D6GsJJxLwxGZ7PtPnJ449BLYbXm'},
     {'五号场地': 'a972TpWf3NHRhVyHdq1EB6LlJ1wG1MEV'},
     {'六号场地': 'v8MjefSF1y6MMvqoJ86L3lxmWdSAV17d'}]
+
+# import requests
+
+# cookies = {
+#     'JSESSIONID': 'CF87A8B678AB71ED7A156D9B0007865C',
+# }
+
+# headers = {
+#     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+#     'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7',
+#     'Cache-Control': 'max-age=0',
+#     'Connection': 'keep-alive',
+#     # 'Cookie': 'JSESSIONID=CF87A8B678AB71ED7A156D9B0007865C',
+#     'Origin': 'https://cas.nua.edu.cn',
+#     'Referer': 'https://cas.nua.edu.cn/lyuapServer/login?service=https%3A%2F%2Fssts.nua.edu.cn%2Fyygj%2F4',
+#     'Sec-Fetch-Dest': 'document',
+#     'Sec-Fetch-Mode': 'navigate',
+#     'Sec-Fetch-Site': 'same-origin',
+#     'Sec-Fetch-User': '?1',
+#     'Upgrade-Insecure-Requests': '1',
+#     'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36',
+#     'sec-ch-ua': '"Google Chrome";v="107", "Chromium";v="107", "Not=A?Brand";v="24"',
+#     'sec-ch-ua-mobile': '?0',
+#     'sec-ch-ua-platform': '"macOS"',
+# }
+
+# params = {
+#     'service': 'https://ssts.nua.edu.cn/yygj/',
+# }
+
+# data = {
+#     'username': 'B191207057',
+#     'password': '47a12b0e333a39ee0c83b7348ab153eea58ad39a21005fe5d1185117529861bc8cd40e2161879cf80528c38bc463bf0e0f4d7f4f915fddfb40fd73299575e209883700f994fd5ce90c8810af50950b5062392cb2292c208c4d1a61c595b97f6688e68201d15ac288c5f41134f0807dc27d12d462b4631cf146c477a43febff49',
+#     'captcha': '',
+#     'warn': 'true',
+#     'lt': 'LT-238328-sdgujH7BgbCbHzbEPTIKJavTO6BYiC-cas01.example.org',
+#     'execution': 'e1s1',
+#     '_eventId': 'submit',
+# }
+
+# response = requests.post('https://cas.nua.edu.cn/lyuapServer/login;jsessionid=CF87A8B678AB71ED7A156D9B0007865C', params=params, cookies=cookies, headers=headers, data=data)
+
 # 遍历字典
 for key in BSite:
     # 获取场地名
